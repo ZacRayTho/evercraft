@@ -4,147 +4,206 @@ from character import Character
 # Tests
 # Create a Character
 def test_create_character():
-    c = Character(name='Buddy', alignment='Good', armor="10")
+    c = Character()
     assert isinstance(c, Character)
 
 # Character has a name
 def test_character_name():
-    c = Character(name='Buddy', alignment='Good', armor=10)
+    c = Character()
     assert hasattr(c, "name")
 
-# Character can set name
+# Character can get name
+def test_character_get_name():
+    c = Character()
+    assert c.name == 'Default Dan'
+
+# Character can set name after creation
 def test_character_set_name():
-    c = Character(name='Buddy', alignment='Good', armor=10)
+    c = Character()
+    c.name = 'Buddy'
     assert c.name == 'Buddy'
 
-#### Feature: Create a Character
-# > As a character I want to have a name so that I can be distinguished 
-# from other characters - multiple characters
-# - can get and set Name
+# Character can set name during creation
+def test_character_set_name_as_created():
+    c = Character(name='Buddy')
+    assert c.name == 'Buddy'
 
-def test_create_character_with_name_setter():
-    character_name = "Cletus"
-    c = Character(name='Buddy', alignment='Good', armor=10)
-    c.name = character_name
-    assert c.name == character_name
+# Character has alignment
+def test_character_alignment():
+    c = Character()
+    assert hasattr(c, 'alignment')
 
-def test_create_character_with_default_name():
-    character_name = "Cletus"
-    c = Character(name=character_name, alignment="good", armor=10)
-    assert c.name == character_name
+# Character can set alignment
+def test_character_alignment_set():
+    c = Character(alignment='Good')
+    assert c.alignment == 'Good'    
 
-def test_create_multiple_characters_with_diff_names():
-    c1 = Character(name="Cletus", alignment="good", armor=10)
-    c2 = Character(name="", alignment="good", armor=10)
-    c2.name = "Fred"
-    assert c1.name != c2.name
-
-# Character can have alignment
-def test_character_has_alignment():
-    c = Character(name="bob", alignment="")
-    assert hasattr(c, "alignment")
-
-# Character can be Neutral
-def test_character_alignment_neutral():
-    c = Character(name="bob", alignment="neutral")
-    assert c.alignment == "neutral"
-
-# Character can be Good
-def test_character_alignment_good():
-    c = Character(name="bob", alignment="good")
-    assert c.alignment == "good"
-
-# Character can be Evil
-def test_character_alignment_evil():
-    c = Character(name="bob", alignment="evil", armor=10)
-    assert c.alignment == "evil"
-# Class for alignment?
-#  
-# Character has armor attribute
-def test_character_has_armor():
-    c = Character(name="bob", alignment="evil", armor=10)
+# Character has armor class
+def test_character_armor():
+    c = Character()
     assert hasattr(c, "armor")
 
-# Character has hit points (hp) attribute
-def test_character_has_hp():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    assert hasattr(c, "hp")
-
 # Character armor defaults to 10
-def test_character_armour_default():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
+def test_character_armor_default():
+    c = Character()
     assert c.armor == 10
+
+# Character has health points (hp)
+def test_character_hp():
+    c = Character()
+    assert hasattr(c, "hp")
 
 # Character hp defaults to 5
 def test_character_hp_default():
-    c = Character(name="bob", alignment="evil", armor=10, hp=5)
+    c = Character()
     assert c.hp == 5
 
-# Character needs to be able to attack another Character
-def test_character_fight():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    assert callable(c.fight)
+# Character can attack
+def test_character_attack():
+    c = Character()
+    assert callable(getattr(c, "attack"))
 
-# Character rolls a 20, attack succeeds
-def test_character_roll_20():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=10)
-    assert c.fight(20, z) == "NAT 20"
+# Character attack roll meets enemy (armor class) AC is a hit
+def test_character_attack_roll_meet_ac():
+    c = Character()
+    z = Character()
+    assert c.attack(10, z)
 
-# Character rolls a 11, beats opp armor, attack succeeds
-def test_character_roll_11():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=10)
-    assert c.fight(11, z) == "success"
+# Character attack roll exceeds enemy AC is a hit
+def test_character_attack_roll_exceed_ac():
+    c = Character()
+    z = Character() 
+    assert c.attack(19, z)
 
-# Character rolls a 1, opp armor to much, attack fails
-def test_character_roll_1():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=10)
-    assert c.fight(1, z) == "fail"
+# Character attack roll under enemy AC is a miss
+def test_character_attack_roll_under_ac():
+    c = Character()
+    z = Character()
+    assert not c.attack(3, z)
 
-# On successful attack, combatant loses hit points
+# Character takes 1 damage on successful attack roll
 def test_character_damage():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=10)
-    c.fight(19, z)
-    assert z.hp < 10
+    c = Character()
+    z = Character()
+    c.attack(12, z)
+    assert z.hp == 4
 
-# On roll = 20, critical hit dealt, attack x2
-def test_character_damage_on_20():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=10)
-    c.fight(20, z)
-    assert z.hp == 8
+# Character takes double damage on attack roll of 20
+def test_character_damage_nat20():
+    c = Character()
+    z = Character()
+    c.attack(20, z)
+    assert z.hp == 3
 
-# Check hitpoints after successful attack, if <= 0, dead
+# Character is dead when hp are 0 or less
 def test_character_death():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10)
-    z = Character(name="rob", alignment="evil", armor=10, hp=1, alive=True)
-    c.fight(11, z)
+    c = Character()
+    z = Character()
+    c.attack(20, z)
+    c.attack(20, z)
+    c.attack(20, z)
     assert z.alive == False
 
-# Character has an attribute of alive: true
-def test_character_alive():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10, alive=True)
-    assert hasattr(c, "alive")
+# Character has Strength ability
+def test_character_strength():
+    c = Character()
+    assert hasattr(c, 'str')
 
-# Character has Abilities that are Strength, Dexterity, Constitution, Wisdom, Intelligence, Charisma
-def test_character_abilities():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10, alive=True, abilities={"strength": 10, "dexterity": 10, "constitution": 10, "wisdom": 10, "intelligence": 10, "charisma": 10})
-    assert hasattr(c, "abilities")
+# Character has Dexterity ability
+def test_character_dexterity():
+    c = Character()
+    assert hasattr(c, 'dex')
 
-# Abilities range from 1 to 20 and default to 10
-def test_character_abilities_default():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10, alive=True, abilities={"strength": 10, "dexterity": 10, "constitution": 10, "wisdom": 10, "intelligence": 10, "charisma": 10})
-    for ability in c.abilities:
-        assert c.abilities[ability] == 10
+# Character has Constitution ability
+def test_character_constitution():
+    c = Character()
+    assert hasattr(c, 'con')
 
-#abilities can't go over 20
-def test_character_abilities_max():
-    c = Character(name="bob", alignment="evil", armor=10, hp=10, alive=True, abilities={"strength": 20, "dexterity": 10, "constitution": 10, "wisdom": 10, "intelligence": 10, "charisma": 10})
-    for ability in c.abilities:
-        assert not c.abilities[ability] > 20
+# Character has Wisdom ability
+def test_character_wisdom():
+    c = Character()
+    assert hasattr(c, 'wis')
+
+# Character has Intelligence ability
+def test_character_intelligence():
+    c = Character()
+    assert hasattr(c, 'int')
+
+# Character has Charisma ability
+def test_character_charisma():
+    c = Character()
+    assert hasattr(c, 'cha')
+
+# Character Abilities range can't go below 1-------------------------------------------------------
+# Character Abilities range can't go above 20
+
+# Character has Strength ability
+def test_character_strength_default():
+    c = Character()
+    assert c.str == 10
+
+# Character has Dexterity ability
+def test_character_dexterity_default():
+    c = Character()
+    assert c.dex == 10
+
+# Character has Constitution ability
+def test_character_constitution_default():
+    c = Character()
+    assert c.con == 10
+
+# Character has Wisdom ability
+def test_character_wisdom_default():
+    c = Character()
+    assert c.wis == 10
+
+# Character has Intelligence ability
+def test_character_intelligence_default():
+    c = Character()
+    assert c.int == 10
+
+# Character has Charisma ability
+def test_character_charisma_default():
+    c = Character()
+    assert c.cha == 10
+
+# Character's strength modifier is added to attack roll
+def test_character_str_mod_attack():
+    c = Character()
+    z = Character()
+    c.str = 20
+    assert c.attack(5, z)
+
+# Character's strength modifier is added to attack roll
+def test_character_str_mod_damage():
+    c = Character()
+    z = Character()
+    c.str = 12
+    c.attack(10, z)
+    assert z.hp == 3
+
+# Character's strength modifier is doubled on critical hit
+def test_character_str_mod_crit():
+    c = Character()
+    z = Character()
+    c. str = 12
+    c.attack(20,z)
+    assert z.hp == -1
+
+# Character's minimum attack always 1
+def test_character_str_mod_min_attack():
+    c = Character()
+    z = Character()
+    c. str = 1
+    c.attack(20,z)
+    assert z.hp == 4
+
+# Character's Dexterity modifier is added to armor
+def test_character_dex_mod_armor():
+    c = Character(dex=12)
+    assert c.armor == 11
+
+
 
 # Abilities have modifiers according to the following table
 # Score	Modifier	Score	Modifier	Score	Modifier	Score	Modifier
