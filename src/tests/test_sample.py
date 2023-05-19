@@ -200,8 +200,7 @@ def test_character_str_mod_min_attack():
 
 # Character's Dexterity modifier is added to armor
 def test_character_dex_mod_armor():
-    c = Character()
-    c.dex = 12
+    c = Character(dex=12)
     assert c.armor == 11
 
 

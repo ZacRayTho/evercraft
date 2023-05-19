@@ -11,8 +11,12 @@ class Character():
     name = "Default Dan"
     alignment = 'Neutral'
     alive = True
-    armor = 10 + modifiers[dex - 1]
     hp = 5
+
+    # the '@property' decorator allows me to define a class method that can be accessed like a class attribute
+    @property 
+    def armor(self):
+        return 10 + self.modifiers[self.dex - 1]
 
     def __init__(self, **attr):
         self.__dict__.update(attr)
@@ -33,6 +37,6 @@ class Character():
         if self.hp <= 0:
             self.alive = False
 
-c = Character()
-c.dex = 12
+c = Character(dex=12)
+
 print(c.armor)
