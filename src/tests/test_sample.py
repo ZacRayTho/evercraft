@@ -127,7 +127,7 @@ def test_character_wisdom():
 # Character has Intelligence ability
 def test_character_intelligence():
     c = Character()
-    assert hasattr(c, 'int')
+    assert hasattr(c, 'inte')
 
 # Character has Charisma ability
 def test_character_charisma():
@@ -160,7 +160,7 @@ def test_character_wisdom_default():
 # Character has Intelligence ability
 def test_character_intelligence_default():
     c = Character()
-    assert c.int == 10
+    assert c.inte == 10
 
 # Character has Charisma ability
 def test_character_charisma_default():
@@ -203,8 +203,38 @@ def test_character_dex_mod_armor():
     c = Character(dex=12)
     assert c.armor == 11
 
+# Character's Constitution modifier is added to hp
+def test_character_con_mod_hp():
+    c = Character(con=12)
+    assert c.hp == 6
 
+# Character's always has 1 hp regardless of constitution mod
+def test_character_con_mod_min_hp():
+    c = Character(con=1)
+    assert c.hp == 1
 
+# Character gains 10 xp after successful attack
+def test_character_exp_gain():
+    c = Character()
+    z = Character()
+    c.attack(12, z)
+    assert c.exp == 10
+
+# Character's level defaults to 1
+def test_character_level():
+    c = Character()
+    assert c.level == 1
+
+# Character's max_hp increase by 5 + con mod for each level
+def test_character_hp_increase():
+    c = Character(exp=1000)
+    assert c.max_hp == 10
+
+# Character gets +1 added to attack roll for every even level gained
+def test_character_attack_roll_increase():
+    c = Character(exp=1000)
+    z = Character()
+    assert c.attack(9, z)
 # Abilities have modifiers according to the following table
 # Score	Modifier	Score	Modifier	Score	Modifier	Score	Modifier
 # 1	-5	6	-2	11	0	16	+3
