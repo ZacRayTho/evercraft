@@ -1,5 +1,5 @@
 # You can write tests here or create new files in this directory with the name test_[something].py
-from character import Character
+from character import Character, Fighter, Rogue
 
 # Tests
 # Create a Character
@@ -235,36 +235,43 @@ def test_character_attack_roll_increase():
     c = Character(exp=1000)
     z = Character()
     assert c.attack(9, z)
-# Abilities have modifiers according to the following table
-# Score	Modifier	Score	Modifier	Score	Modifier	Score	Modifier
-# 1	-5	6	-2	11	0	16	+3
-# 2	-4	7	-2	12	+1	17	+3
-# 3	-4	8	-1	13	+1	18	+4
-# 4	-3	9	-1	14	+2	19	+4
-# 5	-3	10	0	15	+2	20	+5
-# Feature: Character Ability Modifiers Modify Attributes
-# As a character I want to apply my ability modifiers improve my capabilities in combat so that I can vanquish my enemy with extreme prejudice
 
-# add Strength modifier to:
-# attack roll and damage dealt
-# double Strength modifier on critical hits
-# minimum damage is always 1 (even on a critical hit)
-# add Dexterity modifier to armor class
-# add Constitution modifier to hit points (always at least 1 hit point)
-# Feature: A Character can gain experience when attacking
-# As a character I want to accumulate experience points (xp) when I attack my enemies so that I can earn bragging rights at the tavern
+# Character can become a fighter class
+def test_character_fighter_class():
+    c = Fighter()
+    assert isinstance(c, Fighter)
 
-# When a successful attack occurs, the character gains 10 experience points
-# Feature: A Character Can Level
-# As a character I want my experience points to increase my level and combat capabilities so that I can bring vengeance to my foes
+# Fighter class attack rolls increase by 1 for every level instead of every other level
+def test_character_fighter_attack():
+    c = Fighter(exp=2000)
+    z = Character()
+    assert c.attack(8, z)
 
-# Level defaults to 1
-# After 1000 experience points, the character gains a level
-# 0 xp -> 1st Level
-# 1000 xp -> 2nd Level
-# 2000 xp -> 3rd Level
-# etc.
-# For each level:
-# hit points increase by 5 plus Con modifier
-# 1 is added to attack roll for every even level achieved
+# Fighter class has 10 hp per level instead of 5
+def test_character_fighter_hp():
+    c = Fighter()
+    assert c.hp == 10
+
+# Character can become Rogue class
+def test_character_rogue_class():
+    c = Rogue()
+    assert isinstance(c, Rogue)
+
+# Rogue class does triple damage on crits
+def test_character_rogue_crit_damage():
+    c = Rogue()
+    z = Character()
+    c.attack(20, z)
+    assert z.hp == 2
+
+# Rogue class ignores opponent dex mod to armor when attacking
+def test_character_rogue_ignore_dex():
+    c = Rogue()
+    z = Character(dex=12)
+    assert c.attack(10, z)
+
+# Rogue class can't be Good Alignment
+def test_character_rogue_alignment():
+    c = Rogue(alignment="Good")
+    assert c.alignment != "Good"
 # You can write tests here or create new files in this directory with the name test_[something].py
