@@ -53,6 +53,47 @@ class Character():
         if self.hp <= 0:
             self.alive = False
 
-c = Character(exp=1001)
-z = Character()
-c.attack(9,z)
+
+class Fighter(Character):
+    
+    def attack(self, roll, enemy):
+        if roll == 20:
+            damage = ((1 + (self.modifiers[self.str - 1] * 2)) * 2)
+            enemy.hp -= damage if damage > 0 else 1
+            enemy.death_check()
+            self.exp += 10
+            return True
+        elif roll + self.modifiers[self.str - 1] + ((1 * self.level) - 1) >= enemy.armor:
+            damage = 1 + self.modifiers[self.str - 1]
+            enemy.hp -= damage if damage > 0 else 1
+            enemy.death_check()
+            self.exp += 10
+            return True
+
+    @property
+    def max_hp(self):
+        health = (10 + self.modifiers[self.con - 1]) * self.level
+        return health if health > 0 else 1
+
+class Rogue(Character):
+
+    def attack(self, roll, enemy):
+        if roll == 20:
+            damage = ((1 + (self.modifiers[self.str - 1] * 2)) * 3)
+            enemy.hp -= damage if damage > 0 else 1
+            enemy.death_check()
+            self.exp += 10
+            return True
+        elif roll + self.modifiers[self.str - 1] + ((1 * self.level) - 1) >= (enemy.armor - (enemy.modifiers[enemy.dex - 1] if enemy.modifiers[enemy.dex - 1] > 0 else 0)):
+            damage = 1 + self.modifiers[self.str - 1]
+            enemy.hp -= damage if damage > 0 else 1
+            enemy.death_check()
+            self.exp += 10
+            return True
+
+    def __init__(self, **attr):
+        self.__dict__.update(attr)
+        self.hp = copy.copy(self.max_hp)
+        while self.alignment == "Good":
+            self.alignment = input("Alignment can't be Good, choose another: ")
+
