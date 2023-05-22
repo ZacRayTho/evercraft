@@ -1,5 +1,5 @@
 # You can write tests here or create new files in this directory with the name test_[something].py
-from character import Character, Fighter, Rogue
+from character import Character, Fighter, Rogue, Monk, Paladin
 
 # Tests
 # Create a Character
@@ -274,4 +274,61 @@ def test_character_rogue_ignore_dex():
 def test_character_rogue_alignment():
     c = Rogue(alignment="Good")
     assert c.alignment != "Good"
+
+# Character can become Monk class
+def test_character_monk_class():
+    c = Monk()
+    assert isinstance(c, Monk)
+
+# Monk class has 10 hp per level instead of 5
+def test_character_monk_hp():
+    c = Monk()
+    assert c.hp == 6
+
+# Monk class does 3 damage on successful attack
+def test_character_monk_attack():
+    c = Monk()
+    z = Character()
+    c.attack(10, z)
+    assert z.hp == 2
+
+# Monk class added wisdom modifier to armor if positive
+def test_character_monk_wisdom_armor():
+    c = Monk(wis=12)
+    assert c.armor == 11
+
+# Character can become Paladin Class
+def test_character_paladin_class():
+    c = Paladin()
+    assert isinstance(c, Paladin)
+
+# Paladin has 8 hp level instead of 5
+def test_character_paladin_hp():
+    c = Paladin()
+    assert c.hp == 8
+
+# Paladin gets +2 to attack roll and damage when attacking Evil characters
+def test_character_paladin_attack_evil():
+    c = Paladin()
+    z = Character(alignment="Evil")
+    c.attack(8, z)
+    assert z.hp == 2
+
+# Paladin crits times 3 when attacking Evil character
+def test_character_paladin_crit_evil():
+    c = Paladin()
+    z = Character(alignment="Evil")
+    c.attack(20, z)
+    assert z.hp == -4
+
+# Paladin attack rolls increased by 1 for every level
+def test_character_paladin_attack_roll():
+    c = Paladin()
+    z = Character()
+    assert  c.attack(9, z)
+
+# Paladin can only be Good alignment
+def test_character_paladin_good_only():
+    c = Paladin(alignment="Evil")
+    assert c.alignment == "Good"
 # You can write tests here or create new files in this directory with the name test_[something].py
